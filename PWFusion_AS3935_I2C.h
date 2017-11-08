@@ -9,7 +9,7 @@
 *   SEN-39001 (universal applications)
 *   ---> http://www.playingwithfusion.com/productview.php?pdid=22
 *
-* Copyright © 2015 Playing With Fusion, Inc.
+* Copyright Â© 2015 Playing With Fusion, Inc.
 * SOFTWARE LICENSE AGREEMENT: This code is released under the MIT License.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,7 +33,7 @@
 * REVISION HISTORY:
 * Author		Date		Comments
 * J. Steinlage	2015	Original version
-* 
+* E. Signoretta 2017Oct10        Modified to work with Arduino standard wire library
 * Playing With Fusion, Inc. invests time and resources developing open-source
 * code. Please support Playing With Fusion and continued open-source 
 * development by buying products from Playing With Fusion!
