@@ -36,6 +36,7 @@
 * REVISION HISTORY:
 * Author		Date		Comments
 * J. Steinlage		2015Jul20       I2C release based on SPI example
+* E. Signoretta 2017Oct10        Modified to work with Arduino standard wire library
 * 
 * Playing With Fusion, Inc. invests time and resources developing open-source
 * code. Please support Playing With Fusion and continued open-source 
