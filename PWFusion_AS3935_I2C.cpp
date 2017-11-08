@@ -35,6 +35,7 @@
 * J. Steinlage	2015Jul20	Original version
 * J. Steinlage  2016Jul05   Fixed data write issue - now writing 'NewRegData'
 *							  based on feedback from J Shuhy and A Jahnke
+* E. Signoretta 2017Oct10        Modified to work with Arduino standard wire library
 *
 * Playing With Fusion, Inc. invests time and resources developing open-source
 * code. Please support Playing With Fusion and continued open-source
