@@ -35,7 +35,7 @@
 * J. Steinlage	2015Jul20	Original version
 * J. Steinlage  2016Jul05   Fixed data write issue - now writing 'NewRegData'
 *							  based on feedback from J Shuhy and A Jahnke
-* E. Signoretta 2017Oct10        Modified to work with Arduino standard wire library
+* E. Signoretta     2017Nov10       Modified to work with Arduino i2c standard library 
 *
 * Playing With Fusion, Inc. invests time and resources developing open-source
 * code. Please support Playing With Fusion and continued open-source
@@ -49,18 +49,24 @@
 **************************************************************************/
 #include "PWFusion_AS3935_I2c.h"
 
-PWF_AS3935_I2C::PWF_AS3935_I2C(uint8_t IRQx, uint8_t SIx, uint8_t DEVADDx) {
+PWF_AS3935_I2C::PWF_AS3935_I2C(uint8_t IRQx, uint8_t DEVADDx) {
 	_devadd = DEVADDx;
-	_si  = SIx;
+
 	_irq = IRQx;
 
 	// initalize the chip select pins
-	pinMode(_si, OUTPUT);
-	pinMode(_irq, INPUT);
+    pinMode(_irq, INPUT);
 
+}
+
+void PWF_AS3935_I2C::AS3935_SiPin(uint8_t SIx){
+     	_si  = SIx;
+		pinMode(_si, OUTPUT);
+		
 	// set output pin initical condition
 	digitalWrite(_si, HIGH);		// set pin high for I2C mode
 
+	
 }
 
 uint8_t PWF_AS3935_I2C::_sing_reg_read(uint8_t RegAdd) {
@@ -85,7 +91,7 @@ void PWF_AS3935_I2C::_sing_reg_write(uint8_t RegAdd, uint8_t DataMask, uint8_t R
 	uint8_t NewRegData = ((OrigRegData & ~DataMask) | (RegData & DataMask));
 	Wire.beginTransmission(_devadd);
 	// finally, write the data to the register
-	//Wire.write(RegAdd, NewRegData); MODIFICATA DA ME
+
 	Wire.write(RegAdd);
 
 	Wire.write(NewRegData);
@@ -142,13 +148,13 @@ void PWF_AS3935_I2C::AS3935_PowerDown(void) {
 	Serial.println("AS3935 powered down");
 }
 
-void PWF_AS3935_I2C::AS3935_DisturberEn(void) {
+void PWF_AS3935_I2C::AS3935_DisturberEnable(void) {
 	// register 0x03, PWD bit: 5 (sets MASK_DIST)
 	_sing_reg_write(0x03, 0x20, 0x00);
 	Serial.println("disturber detection enabled");
 }
 
-void PWF_AS3935_I2C::AS3935_DisturberDis(void) {
+void PWF_AS3935_I2C::AS3935_DisturberDisable(void) {
 	// register 0x03, PWD bit: 5 (sets MASK_DIST)
 	_sing_reg_write(0x03, 0x20, 0x20);
 }
@@ -359,25 +365,10 @@ void PWF_AS3935_I2C::AS3935_PrintAllRegs(void) {
 	Serial.println(nrgy_val);
 }
 
-void PWF_AS3935_I2C::AS3935_ManualCal(uint8_t capacitance, uint8_t location, uint8_t disturber) {
+void PWF_AS3935_I2C::AS3935_ManualCal(uint8_t capacitance) {
 	// start by powering up
 	AS3935_PowerUp();
 
-	// indoors/outdoors next...
-	if (1 == location) {						// set outdoors if 1
-			AS3935_SetOutdoors();
-		}
-	else {									// set indoors if anything but 1
-			AS3935_SetIndoors();
-		}
-
-	// disturber cal
-	if (0 == disturber) {						// disabled if 0
-			AS3935_DisturberDis();
-		}
-	else {									// enabled if anything but 0
-			AS3935_DisturberEn();
-		}
 
 	AS3935_SetIRQ_Output_Source(0);
 

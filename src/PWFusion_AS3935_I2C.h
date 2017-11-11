@@ -9,7 +9,7 @@
 *   SEN-39001 (universal applications)
 *   ---> http://www.playingwithfusion.com/productview.php?pdid=22
 *
-* Copyright Â© 2015 Playing With Fusion, Inc.
+* Copyright © 2015 Playing With Fusion, Inc.
 * SOFTWARE LICENSE AGREEMENT: This code is released under the MIT License.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,7 +33,8 @@
 * REVISION HISTORY:
 * Author		Date		Comments
 * J. Steinlage	2015	Original version
-* E. Signoretta 2017Oct10        Modified to work with Arduino standard wire library
+* E. Signoretta     2017Nov10       Modified to work with Arduino i2c standard library 
+* 
 * Playing With Fusion, Inc. invests time and resources developing open-source
 * code. Please support Playing With Fusion and continued open-source 
 * development by buying products from Playing With Fusion!
@@ -56,13 +57,14 @@
 class PWF_AS3935_I2C
 {
  public:
-	PWF_AS3935_I2C(uint8_t IRQx, uint8_t SIx, uint8_t DEVADDx);
-	void AS3935_ManualCal(uint8_t capacitance, uint8_t location, uint8_t disturber);
+	PWF_AS3935_I2C(uint8_t IRQx, uint8_t DEVADDx);
+	void AS3935_SiPin(uint8_t SIx);
+	void AS3935_ManualCal(uint8_t capacitance);
 	void AS3935_DefInit(void);
 	void AS3935_PowerUp(void);
 	void AS3935_PowerDown(void);
-	void AS3935_DisturberEn(void);
-	void AS3935_DisturberDis(void);
+	void AS3935_DisturberEnable(void);
+	void AS3935_DisturberDisable(void);
 	void AS3935_SetIRQ_Output_Source(uint8_t irq_select);
 	void AS3935_SetTuningCaps(uint8_t cap_val);
 	uint8_t AS3935_GetInterruptSrc(void);
