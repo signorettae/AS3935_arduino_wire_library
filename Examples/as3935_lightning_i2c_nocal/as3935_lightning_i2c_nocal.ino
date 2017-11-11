@@ -105,61 +105,117 @@ void setup()
   Wire.setClock(1); 
   delay(2);
   
+  
+
   lightning0.AS3935_DefInit();   // set registers to default  
+
   // now update sensor cal for your application and power up chip
+
   lightning0.AS3935_ManualCal(AS3935_CAPACITANCE, AS3935_OUTDOORS, AS3935_DIST_EN);
+
                                  // AS3935_ManualCal Parameters:
+
                                  //   --> capacitance, in pF (marked on package)
+
                                  //   --> indoors/outdoors (AS3935_INDOORS:0 / AS3935_OUTDOORS:1)
+
                                  //   --> disturbers (AS3935_DIST_EN:1 / AS3935_DIST_DIS:2)
+
                                  // function also powers up the chip
+
                   
+
   // enable interrupt (hook IRQ pin to Arduino Uno/Mega interrupt input: 0 -> pin 2, 1 -> pin 3 )
+
   attachInterrupt(0, AS3935_ISR, RISING);
+
   lightning0.AS3935_PrintAllRegs();
+
   AS3935_ISR_Trig = 0;           // clear trigger
 
+
+
 }
+
+
 
 void loop()
+
 {
+
   // This program only handles an AS3935 lightning sensor. It does nothing until 
+
   // an interrupt is detected on the IRQ pin.
+
   while(0 == AS3935_ISR_Trig){}
+
   delay(5);
+
   
+
   // reset interrupt flag
+
   AS3935_ISR_Trig = 0;
+
   
+
   // now get interrupt source
+
   uint8_t int_src = lightning0.AS3935_GetInterruptSrc();
+
   if(0 == int_src)
+
   {
+
     Serial.println("interrupt source result not expected");
+
   }
+
   else if(1 == int_src)
+
   {
+
     uint8_t lightning_dist_km = lightning0.AS3935_GetLightningDistKm();
+
     Serial.print("Lightning detected! Distance to strike: ");
+
     Serial.print(lightning_dist_km);
+
     Serial.println(" kilometers");
+
   }
+
   else if(2 == int_src)
+
   {
+
     Serial.println("Disturber detected");
+
   }
+
   else if(3 == int_src)
+
   {
+
     Serial.println("Noise level too high");
+
   }
-  lightning0.AS3935_PrintAllRegs(); android:orientation="vertical"
-      // for debug...
+
+  lightning0.AS3935_PrintAllRegs(); // for debug...
+
 }
 
+
+
 // this is irq handler for AS3935 interrupts, has to return void and take no arguments
+
 // always make code in interrupt handlers fast and short
+
 void AS3935_ISR()
+
 {
+
   AS3935_ISR_Trig = 1;
+
 }
 
