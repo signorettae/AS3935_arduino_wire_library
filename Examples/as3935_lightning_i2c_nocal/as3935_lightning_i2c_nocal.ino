@@ -36,8 +36,8 @@
 * REVISION HISTORY:
 * Author		Date		Comments
 * J. Steinlage		2015Jul20       I2C release based on SPI example
-* E. Signoretta 2017Oct10        Modified to work with Arduino standard wire library
-* 
+* E. Signoretta     2017Nov10       Modified to work with Arduino i2c standard library 
+*
 * Playing With Fusion, Inc. invests time and resources developing open-source
 * code. Please support Playing With Fusion and continued open-source 
 * development by buying products from Playing With Fusion!
@@ -54,8 +54,6 @@
 *    - Write formatted information to serial port
 * - Set configs for your specific needs using the #defines for wiring, and
 *   review the setup() function for other settings (indoor/outdoor, for example)
-* - I2C specific note: This example uses the I2C interface via the I2C lib, not
-*   the 'I2C' lib included with the Arduino IDE.
 * 
 * Circuit:
 *    Arduino Uno   Arduino Mega  -->  SEN-39001: AS3935 Breakout
@@ -68,7 +66,6 @@
 *    5V:     5V         ''       -->  Arduino I/O is at 5V, so power board from 5V. Can use 3.3V with Due, etc
 **************************************************************************/
 // The AS3935 communicates via SPI or I2C. 
-// This example uses the I2C interface via the I2C lib, not Wire lib
 #include<Wire.h>
 // include Playing With Fusion AXS3935 libraries
 #include "PWFusion_AS3935_I2C.h"
@@ -78,20 +75,15 @@ volatile int8_t AS3935_ISR_Trig = 0;
 
 // defines for hardware config
 #define SI_PIN               3
-#define IRQ_PIN              6       // digital pins 2 and 3 are available for interrupt capability
+#define IRQ_PIN              2       // digital pins 2 and 3 are available for interrupt capability
 #define AS3935_ADD           0x03     // x03 - standard PWF SEN-39001-R01 config
 #define AS3935_CAPACITANCE   72       // <-- SET THIS VALUE TO THE NUMBER LISTED ON YOUR BOARD 
 
-// defines for general chip settings
-#define AS3935_INDOORS       0
-#define AS3935_OUTDOORS      1
-#define AS3935_DIST_DIS      0
-#define AS3935_DIST_EN       1
 
 // prototypes
 void AS3935_ISR();
 
-PWF_AS3935_I2C  lightning0((uint8_t)IRQ_PIN, (uint8_t)SI_PIN, (uint8_t)AS3935_ADD);
+PWF_AS3935_I2C  lightning0((uint8_t)IRQ_PIN,(uint8_t)AS3935_ADD);
 
 void setup()
 {
@@ -100,36 +92,24 @@ void setup()
   Serial.println("Playing With Fusion: AS3935 Lightning Sensor, SEN-39001-R01");
   Serial.println("beginning boot procedure....");
   
-  // setup for the the I2C library: (enable pullups, set speed to 400kHz)
+  // setup for the the I2C library: (set speed to 400kHz)
   Wire.begin();
   Wire.setClock(1); 
   delay(2);
-  
-  
-
-  lightning0.AS3935_DefInit();   // set registers to default  
+   lightning0.AS3935_DefInit();   // set registers to default  
 
   // now update sensor cal for your application and power up chip
 
-  lightning0.AS3935_ManualCal(AS3935_CAPACITANCE, AS3935_OUTDOORS, AS3935_DIST_EN);
+  lightning0.AS3935_ManualCal(AS3935_CAPACITANCE);
 
-                                 // AS3935_ManualCal Parameters:
-
+                                 // AS3935_ManualCal Parameter:
                                  //   --> capacitance, in pF (marked on package)
-
-                                 //   --> indoors/outdoors (AS3935_INDOORS:0 / AS3935_OUTDOORS:1)
-
-                                 //   --> disturbers (AS3935_DIST_EN:1 / AS3935_DIST_DIS:2)
-
                                  // function also powers up the chip
-
-                  
-
-  // enable interrupt (hook IRQ pin to Arduino Uno/Mega interrupt input: 0 -> pin 2, 1 -> pin 3 )
-
+                                 // enable interrupt (hook IRQ pin to Arduino Uno/Mega interrupt input: 0 -> pin 2, 1 -> pin 3 )
+lightning0.AS3935_SetIndoors();
+lightning0.AS3935_DisturberEnable();
   attachInterrupt(0, AS3935_ISR, RISING);
-
-  lightning0.AS3935_PrintAllRegs();
+ lightning0.AS3935_PrintAllRegs();
 
   AS3935_ISR_Trig = 0;           // clear trigger
 
